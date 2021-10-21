@@ -307,7 +307,6 @@ impl Session {
 impl FromRequest for Session {
     type Error = Error;
     type Future = Ready<Result<Session, Error>>;
-    type Config = ();
 
     #[inline]
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
@@ -317,13 +316,13 @@ impl FromRequest for Session {
 
 #[cfg(test)]
 mod tests {
-    use actix_web::{test, HttpResponse};
+    use actix_web::{test::TestRequest, HttpResponse};
 
     use super::*;
 
     #[test]
     fn session() {
-        let mut req = test::TestRequest::default().to_srv_request();
+        let mut req = TestRequest::default().to_srv_request();
 
         Session::set_session(
             &mut req,
@@ -344,7 +343,7 @@ mod tests {
 
     #[test]
     fn get_session() {
-        let mut req = test::TestRequest::default().to_srv_request();
+        let mut req = TestRequest::default().to_srv_request();
 
         Session::set_session(
             &mut req,
@@ -358,7 +357,7 @@ mod tests {
 
     #[test]
     fn get_session_from_request_head() {
-        let mut req = test::TestRequest::default().to_srv_request();
+        let mut req = TestRequest::default().to_srv_request();
 
         Session::set_session(
             &mut req,
@@ -372,7 +371,7 @@ mod tests {
 
     #[test]
     fn purge_session() {
-        let req = test::TestRequest::default().to_srv_request();
+        let req = TestRequest::default().to_srv_request();
         let session = Session::get_session(&mut *req.extensions_mut());
         assert_eq!(session.0.borrow().status, SessionStatus::Unchanged);
         session.purge();
@@ -381,7 +380,7 @@ mod tests {
 
     #[test]
     fn renew_session() {
-        let req = test::TestRequest::default().to_srv_request();
+        let req = TestRequest::default().to_srv_request();
         let session = Session::get_session(&mut *req.extensions_mut());
         assert_eq!(session.0.borrow().status, SessionStatus::Unchanged);
         session.renew();
